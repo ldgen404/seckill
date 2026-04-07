@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+      </profile>
+      <profile name="Annotation profile for ldgen-seckill" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$PROJECT_DIR$/../../../../dev-env-tools/dev_env/repository/org/projectlombok/lombok/1.18.30/lombok-1.18.30.jar" />
+          <entry name="$PROJECT_DIR$/../../../../dev-env-tools/dev_env/repository/org/projectlombok/lombok/1.18.30/lombok-1.18.30.jar" />
+        </processorPath>
+        <module name="ldgen-seckill-app" />
+        <module name="ldgen-seckill-order" />
+        <module name="ldgen-seckill-user" />
+        <module name="ldgen-seckill-goods" />
+        <module name="ldgen-seckill-common" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="xiaoha-seckill-app" target="21" />
+      <module name="xiaoha-seckill-common" target="21" />
+      <module name="xiaoha-seckill-goods" target="21" />
+      <module name="xiaoha-seckill-order" target="21" />
+      <module name="xiaoha-seckill-user" target="21" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="ldgen-seckill-app" options="-parameters" />
+      <module name="ldgen-seckill-common" options="-parameters" />
+      <module name="ldgen-seckill-goods" options="-parameters" />
+      <module name="ldgen-seckill-order" options="-parameters" />
+      <module name="ldgen-seckill-user" options="-parameters" />
+      <module name="xiaoha-seckill-app" options="-parameters" />
+      <module name="xiaoha-seckill-common" options="-parameters" />
+      <module name="xiaoha-seckill-goods" options="-parameters" />
+      <module name="xiaoha-seckill-order" options="-parameters" />
+      <module name="xiaoha-seckill-user" options="-parameters" />
+    </option>
+  </component>
+</project>
