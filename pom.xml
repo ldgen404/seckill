@@ -47,15 +47,18 @@
 
         <!-- 依赖包版本 -->
         <!-- MyBatis 版本 -->
-    <mybatis-spring-boot.version>3.0.5</mybatis-spring-boot.version>
-    <mybatis-generator-maven-plugin.version>1.3.5</mybatis-generator-maven-plugin.version>
-    <!-- MySQL 驱动版本 -->
-    <mysql.version>8.0.33</mysql.version>
-    <!-- Lombok 版本 -->
-    <lombok.version>1.18.30</lombok.version>
-    <!-- Knife4j 版本 -->
-    <knife4j.version>4.4.0</knife4j.version>
-  </properties>
+        <mybatis-spring-boot.version>3.0.5</mybatis-spring-boot.version>
+        <mybatis-generator-maven-plugin.version>1.3.5</mybatis-generator-maven-plugin.version>
+        <!-- MySQL 驱动版本 -->
+        <mysql.version>8.0.33</mysql.version>
+        <!-- Lombok 版本 -->
+        <lombok.version>1.18.36</lombok.version>
+        <!-- Knife4j 版本 -->
+        <knife4j.version>4.5.0</knife4j.version>
+        <!-- Disruptor 队列版本 -->
+        <disruptor.version>3.4.4</disruptor.version>
+        <hutool.version>5.8.38</hutool.version>
+    </properties>
 
     <!-- 统一依赖管理 -->
     <dependencyManagement>
@@ -89,20 +92,32 @@
             </dependency>
 
             <!-- MyBatis -->
-      <dependency>
-        <groupId>org.mybatis.spring.boot</groupId>
-        <artifactId>mybatis-spring-boot-starter</artifactId>
-        <version>${mybatis-spring-boot.version}</version>
-      </dependency>
+            <dependency>
+                <groupId>org.mybatis.spring.boot</groupId>
+                <artifactId>mybatis-spring-boot-starter</artifactId>
+                <version>${mybatis-spring-boot.version}</version>
+            </dependency>
 
-      <!-- Knife4j -->
-      <dependency>
-        <groupId>com.github.xiaoymin</groupId>
-        <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
-        <version>${knife4j.version}</version>
-      </dependency>
+            <!-- Knife4j -->
+            <dependency>
+                <groupId>com.github.xiaoymin</groupId>
+                <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
+                <version>${knife4j.version}</version>
+            </dependency>
 
-    </dependencies>
+            <!-- Disruptor 高性能队列（Log4j2 异步日志需要） -->
+            <dependency>
+                <groupId>com.lmax</groupId>
+                <artifactId>disruptor</artifactId>
+                <version>${disruptor.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>${hutool.version}</version>
+            </dependency>
+        </dependencies>
     </dependencyManagement>
 
     <build>

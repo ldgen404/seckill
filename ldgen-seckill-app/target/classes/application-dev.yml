@@ -37,7 +37,9 @@ mybatis:
 springdoc:
   group-configs:
     - group: 'default'
-      packages-to-scan: com.ldgen.aicodemaster.controller
+      packages-to-scan: com.ldgen.seckill
+  # 解决你一直报的 NoSuchMethodError 关键！
+  override-with-generic-response: false
 # knife4j
 knife4j:
   enable: true
