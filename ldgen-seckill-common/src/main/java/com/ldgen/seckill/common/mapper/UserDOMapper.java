@@ -1,6 +1,6 @@
-package com.ldgen.seckill.common.domain.mapper;
+package com.ldgen.seckill.common.mapper;
 
-import com.ldgen.seckill.common.domain.dataobject.UserDO;
+import com.ldgen.seckill.common.dataobject.UserDO;
 
 public interface UserDOMapper {
     int deleteByPrimaryKey(Long id);

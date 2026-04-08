@@ -9,3 +9,17 @@ spring:
 mybatis:
   # MyBatis xml 配置文件路径
   mapper-locations: classpath:/mapper/**/*.xml
+
+# springdoc-openapi
+springdoc:
+  group-configs:
+    - group: 'default'
+      packages-to-scan: com.ldgen.seckill.controller # 修改为项目中实际的 controller 包名
+
+# knife4j
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
+    enable-debug: true     # 启用调试器（关键！）
+    enable-cache-data: true   # 启用参数缓存（关键！）

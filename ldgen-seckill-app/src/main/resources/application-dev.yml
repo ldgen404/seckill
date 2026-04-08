@@ -31,3 +31,17 @@ mybatis:
   configuration:
     # 开发阶段打印 SQL 语句，方便调试
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+
+# springdoc-openapi
+springdoc:
+  group-configs:
+    - group: 'default'
+      packages-to-scan: com.ldgen.aicodemaster.controller
+# knife4j
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
+    enable-debug: true     # 启用调试器（关键！）
+    enable-cache-data: true   # 启用参数缓存（关键！）

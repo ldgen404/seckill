@@ -1,6 +1,6 @@
 package com.ldgen.seckill.app;
-import com.ldgen.seckill.common.domain.dataobject.UserDO;
-import com.ldgen.seckill.common.domain.mapper.UserDOMapper;import jakarta.annotation.Resource;import org.junit.jupiter.api.Test;
+import com.ldgen.seckill.common.dataobject.UserDO;
+import com.ldgen.seckill.common.mapper.UserDOMapper;import jakarta.annotation.Resource;import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDateTime;

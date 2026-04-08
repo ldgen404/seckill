@@ -26,7 +26,7 @@ public class StartupLogger implements ApplicationListener<ApplicationReadyEvent>
             String port = env.getProperty("server.port", "8080");
 
             String docPath =
-                    env.getProperty("ldgen.doc-path", "api/doc.html#/home");
+                    env.getProperty("ldgen.doc-path", "doc.html#/home");
 
             String docUrl =
                     protocol + "://localhost:" + port + "/" + docPath;

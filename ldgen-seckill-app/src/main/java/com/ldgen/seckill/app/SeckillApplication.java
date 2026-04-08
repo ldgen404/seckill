@@ -13,7 +13,7 @@ import org.springframework.context.annotation.ComponentScan;
  **/
 @SpringBootApplication
 @ComponentScan({"com.ldgen.seckill.*"}) // 多模块项目中，必需手动指定扫描 com.ldgen.seckill 包下面的所有类
-@MapperScan("com.ldgen.seckill.common.domain.mapper")
+@MapperScan("com.ldgen.seckill.common.mapper")
 public class SeckillApplication {
 
     public static void main(String[] args) {
