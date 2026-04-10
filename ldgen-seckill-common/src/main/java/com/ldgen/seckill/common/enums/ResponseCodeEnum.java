@@ -20,6 +20,9 @@ public enum ResponseCodeEnum implements BaseExceptionInterface {
 
 
     // ----------- 业务异常状态码 -----------
+    USER_MOBILE_EXISTS("20001", "该手机号已注册"),
+    USER_VERIFY_CODE_ERROR("20002", "验证码错误"),
+    PASSWORD_ERROR("20003", "密码的必须超过8位"),
     ;
 
     // 异常码
