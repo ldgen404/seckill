@@ -68,9 +68,7 @@ public class UserServiceImpl implements UserService {
         return Response.success();
     }
 
-
-    /**
-     * 随机生成用户昵称
+     /* 随机生成用户昵称
      *
      * @return
      */
