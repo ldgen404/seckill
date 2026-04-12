@@ -132,4 +132,13 @@
       from t_user
       where mobile = #{mobile,jdbcType=VARCHAR}
   </select>
+
+
+  <select id="selectByMobile" resultType="com.ldgen.seckill.common.dataobject.UserDO"
+          parameterType="java.lang.String">
+    select
+    <include refid="Base_Column_List" />
+    from t_user
+    where mobile = #{mobile,jdbcType=VARCHAR}
+  </select>
 </mapper>
