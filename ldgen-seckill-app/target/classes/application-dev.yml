@@ -25,6 +25,18 @@ spring:
       connection-timeout: 30000
       # 连接测试语句
       connection-test-query: SELECT 1
+  data:
+    redis:
+      # Redis 服务器地址
+      host: 127.0.0.1
+      # Redis 服务器端口
+      port: 6379
+      # Redis 密码（默认为空，如果设置了密码请填写）
+      # 使用的数据库索引（默认 0）
+      database: 0
+      # 连接超时时间（毫秒）
+      timeout: 5000
+
 
 # MyBatis 开发环境专属配置
 mybatis:
@@ -47,3 +59,14 @@ knife4j:
     language: zh_cn
     enable-debug: true     # 启用调试器（关键！）
     enable-cache-data: true   # 启用参数缓存（关键！）
+
+# 自定义线程池配置
+thread-pool:
+  # 核心线程数
+  core-pool-size: 2
+  # 最大线程数
+  max-pool-size: 5
+  # 队列容量
+  queue-capacity: 100
+  # 空闲线程存活时间（秒）
+  keep-alive-seconds: 60
