@@ -1,2 +1,11 @@
-E:\code\Java\Project\ldgen-seckill\ldgen-seckill-common\src\main\java\com\ldgen\seckill\common\domain\dataobject\UserDO.java
-E:\code\Java\Project\ldgen-seckill\ldgen-seckill-common\src\main\java\com\ldgen\seckill\common\domain\mapper\UserDOMapper.java
+E:\code\Java\Project\ldgen-seckill\ldgen-seckill-common\src\main\java\com\ldgen\seckill\common\aspect\ApiOperationLog.java
+E:\code\Java\Project\ldgen-seckill\ldgen-seckill-common\src\main\java\com\ldgen\seckill\common\aspect\ApiOperationLogAspect.java
+E:\code\Java\Project\ldgen-seckill\ldgen-seckill-common\src\main\java\com\ldgen\seckill\common\config\RedisConfig.java
+E:\code\Java\Project\ldgen-seckill\ldgen-seckill-common\src\main\java\com\ldgen\seckill\common\dataobject\UserDO.java
+E:\code\Java\Project\ldgen-seckill\ldgen-seckill-common\src\main\java\com\ldgen\seckill\common\enums\ResponseCodeEnum.java
+E:\code\Java\Project\ldgen-seckill\ldgen-seckill-common\src\main\java\com\ldgen\seckill\common\exception\BaseExceptionInterface.java
+E:\code\Java\Project\ldgen-seckill\ldgen-seckill-common\src\main\java\com\ldgen\seckill\common\exception\BizException.java
+E:\code\Java\Project\ldgen-seckill\ldgen-seckill-common\src\main\java\com\ldgen\seckill\common\exception\GlobalExceptionHandler.java
+E:\code\Java\Project\ldgen-seckill\ldgen-seckill-common\src\main\java\com\ldgen\seckill\common\mapper\UserDOMapper.java
+E:\code\Java\Project\ldgen-seckill\ldgen-seckill-common\src\main\java\com\ldgen\seckill\common\utils\JsonUtils.java
+E:\code\Java\Project\ldgen-seckill\ldgen-seckill-common\src\main\java\com\ldgen\seckill\common\utils\Response.java
