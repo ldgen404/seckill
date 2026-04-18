@@ -18,13 +18,20 @@ import com.ldgen.seckill.user.model.vo.SendVerifyCodeReqVO;
 import com.ldgen.seckill.user.service.UserService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SessionCallback;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Collections;
 import java.util.Objects;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
@@ -51,6 +58,28 @@ public class UserServiceImpl implements UserService {
     // 发送频率限制时间（秒）
     private static final Long VERIFY_CODE_LIMIT_SECONDS = 60L;
 
+
+    /**
+     * 验证码校验 Lua 脚本
+     */
+    private final DefaultRedisScript<Long> checkAndDeleteVerifyCodeScript;
+    // Redis 中每日发送次数限制的 Key 前缀
+    private static final String VERIFY_CODE_DAILY_LIMIT_KEY_PREFIX = "verify_code_daily:";
+    // 每日发送次数上限
+    private static final Integer VERIFY_CODE_DAILY_LIMIT = 10;
+
+    /**
+     * 构造函数：初始化 Lua 脚本
+     */
+    public UserServiceImpl() {
+        checkAndDeleteVerifyCodeScript = new DefaultRedisScript<>();
+        // 从 classpath 的 lua 目录下加载 Lua 脚本文件
+        checkAndDeleteVerifyCodeScript.setLocation(new ClassPathResource("lua/check_and_delete_verify_code.lua"));
+        // 指定脚本返回值类型
+        checkAndDeleteVerifyCodeScript.setResultType(Long.class);
+    }
+
+
     /**
      * 用户注册
      *
@@ -66,9 +95,6 @@ public class UserServiceImpl implements UserService {
 
         //1、校验验证码
         checkVerifyCode(verifyCode, mobile, VerifyCodeTypeEnum.REGISTER.getPurpose());
-        if (!"123456".equals(verifyCode)) {
-            throw new BizException(ResponseCodeEnum.USER_VERIFY_CODE_ERROR);
-        }
 
         // 2. 校验手机号是否已注册
         Long existUserId = userDOMapper.selectIdByMobile(mobile);
@@ -171,7 +197,26 @@ public class UserServiceImpl implements UserService {
         if (redisTemplate.hasKey(limitKey)) {
             throw new BizException(ResponseCodeEnum.VERIFY_CODE_SEND_TOO_FREQUENT);
         }
+        // 每日发送次数限制：同一手机号、同一场景，每天最多发送 10 条
+        String dailyLimitKey = VERIFY_CODE_DAILY_LIMIT_KEY_PREFIX + verifyCodeType.getPurpose()
+                + ":" + mobile + ":" + LocalDate.now();
+        // 发送次数 +1
+        Long dailyCount = redisTemplate.opsForValue().increment(dailyLimitKey);
+        // 首次设置缓存时，计算到当天结束的剩余秒数，作为 Key 的 TTL 过期时间
+        if (Objects.nonNull(dailyCount) && dailyCount == 1) {
+            // 计算从当前时间，到第二天凌晨零点之间还剩下多少秒
+            long secondsUntilMidnight = Duration.between(
+                    LocalDateTime.now(),
+                    LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.MIDNIGHT)
+            ).getSeconds();
 
+            // 设置过期时间
+            redisTemplate.expire(dailyLimitKey, secondsUntilMidnight, TimeUnit.SECONDS);
+        }
+        // 如果已经超过 10 条，抛出业务异常
+        if (Objects.nonNull(dailyCount) && dailyCount > VERIFY_CODE_DAILY_LIMIT) {
+            throw new BizException(ResponseCodeEnum.VERIFY_CODE_DAILY_LIMIT_EXCEEDED);
+        }
         // 生成 6 位随机数字验证码
         String verifyCode = RandomUtil.randomNumbers(6);
 
@@ -245,11 +290,14 @@ public class UserServiceImpl implements UserService {
         }
         //redis 中对应手机号，对应场景验证码
         String redisKey = VERIFY_CODE_KEY_PREFIX + purpose + ":" + mobile;
-        Object storedCode = redisTemplate.opsForValue().get(redisKey);
+        // 执行 Lua 脚本：原子性地比对验证码并删除（匹配返回 1; 不匹配或 Key 不存在返回 0）
+        Long result = redisTemplate.execute(checkAndDeleteVerifyCodeScript,
+                Collections.singletonList(redisKey),
+                verifyCode);
 
-        // 比对验证码是否正确
-        if (Objects.isNull(storedCode)
-                || !verifyCode.equals(storedCode.toString())) {
+
+        // 验证码错误或已过期
+        if (result == null || result == 0) {
             throw new BizException(ResponseCodeEnum.USER_VERIFY_CODE_ERROR);
         }
         redisTemplate.delete(redisKey);
