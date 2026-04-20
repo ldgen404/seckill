@@ -49,6 +49,16 @@ public class UserServiceImpl implements UserService {
     @Resource(name = "bizExecutor")
     private Executor bizExecutor;
 
+    /**
+     * 代码抽取
+     */
+    // BCrypt 密码编码器
+    private static final BCryptPasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder();
+
+    /**
+     * 业务常量定义
+     */
+
     // Redis 中验证码的 Key 前缀
     private static final String VERIFY_CODE_KEY_PREFIX = "verify_code:";
     // Redis 中发送频率限制的 Key 前缀
@@ -57,6 +67,13 @@ public class UserServiceImpl implements UserService {
     private static final Long VERIFY_CODE_EXPIRE_MINUTES = 5L;
     // 发送频率限制时间（秒）
     private static final Long VERIFY_CODE_LIMIT_SECONDS = 60L;
+
+    // Redis 中登录失败次数的 Key 前缀
+    private static final String LOGIN_FAIL_COUNT_KEY_PREFIX = "login_fail_count:";
+    // 登录失败次数上限（超过此值则临时锁定账号）
+    private static final Integer LOGIN_FAIL_MAX_COUNT = 5;
+    // 账号临时锁定时间（分钟）
+    private static final Long LOGIN_LOCK_MINUTES = 30L;
 
 
     /**
@@ -107,9 +124,7 @@ public class UserServiceImpl implements UserService {
             throw new BizException(ResponseCodeEnum.PASSWORD_ERROR);
         }
         // 3. 密码加密（使用 BCrypt 算法）
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        String encodedPassword = passwordEncoder.encode(password);
-
+        String encodedPassword = PASSWORD_ENCODER.encode(password);
         // 4. 构建用户实体，插入数据库
         UserDO userDO = UserDO.builder()
                 .mobile(mobile)
@@ -136,22 +151,26 @@ public class UserServiceImpl implements UserService {
         // 1. 根据手机号查询用户
         UserDO userDO = userDOMapper.selectByMobile(mobile);
 
-        //2. 判断用户是否存在
+        // 2. 判断用户是否存在
         if (Objects.isNull(userDO)) {
             throw new BizException(ResponseCodeEnum.USER_MOBILE_NOT_REGISTERED);
         }
 
-        // 3. 根据登录类型，进行身份验证
+        // 3. 校验用户状态（是否被禁用，放在身份验证之前，避免被禁用账号还执行耗时的密码校验）
+        if (Objects.equals(userDO.getStatus(), UserStatusEnum.DISABLED.getCode())) {
+            throw new BizException(ResponseCodeEnum.USER_STATUS_DISABLED);
+        }
+
+        // 4. 根据登录类型，进行身份验证
         if (Objects.equals(type, LoginTypeEnum.PASSWORD.getCode())) {
+            // 检查登录失败次数
+            checkLoginFailLimit(mobile);
+
             // 密码登录：校验密码是否正确
-            checkPassword(loginUserReqVO.getPassword(), userDO.getPassword());
+            checkPassword(loginUserReqVO.getPassword(), userDO.getPassword(), mobile);
         } else {
             // 验证码登录：校验验证码是否正确
             checkVerifyCode(loginUserReqVO.getVerifyCode(), mobile, VerifyCodeTypeEnum.LOGIN.getPurpose());
-        }
-        // 4. 校验用户状态（是否被禁用）
-        if (Objects.equals(userDO.getStatus(), UserStatusEnum.DISABLED.getCode())) {
-            throw new BizException(ResponseCodeEnum.USER_STATUS_DISABLED);
         }
 
         // 5. 调用 SaToken 执行登录，传入用户 ID
@@ -240,6 +259,40 @@ public class UserServiceImpl implements UserService {
         return Response.success();
     }
 
+    /**
+     * 检查登录失败次数是否超限
+     *
+     * @param mobile 手机号
+     */
+    private void checkLoginFailLimit(String mobile) {
+        // 构建 Redis Key
+        String failCountKey = LOGIN_FAIL_COUNT_KEY_PREFIX + mobile;
+        //查询 Redis 缓存中的登录失败次数
+        Integer failCount = (Integer) redisTemplate.opsForValue().get(failCountKey);
+        // 判断登录失败次数是否超过上限
+        if (Objects.nonNull(failCount) && failCount >= LOGIN_FAIL_MAX_COUNT) {
+            throw new BizException(ResponseCodeEnum.LOGIN_FAIL_TOO_MANY);
+        }
+    }
+
+
+    /**
+     * 累加登录失败次数
+     *
+     * @param mobile 手机号
+     */
+    private void addLoginFailCount(String mobile) {
+        // 构建 Redis Key
+        String failCountKey = LOGIN_FAIL_COUNT_KEY_PREFIX + mobile;
+
+        // 查询 Redis 缓存中登录失败次数
+        Long failCount = redisTemplate.opsForValue().increment(failCountKey);
+
+        // 如果是第一次添加缓存，需要设置过期时间（锁定窗口）
+        if (Objects.nonNull(failCount) && failCount == 1) {
+            redisTemplate.expire(failCountKey, LOGIN_LOCK_MINUTES, TimeUnit.MINUTES);
+        }
+    }
 
     /**
      * 发送短信验证码
@@ -263,20 +316,31 @@ public class UserServiceImpl implements UserService {
      *
      * @param rawPassword     明文密码
      * @param encodedPassword 加密后的密码
+     * @param mobile          手机号
      */
-    private void checkPassword(String rawPassword, String encodedPassword) {
+    private void checkPassword(String rawPassword, String encodedPassword, String mobile) {
         // 密码不能为空
         if (StrUtil.isBlank(rawPassword)) {
+            // 登录失败次数 +1
+            addLoginFailCount(mobile);
+
             throw new BizException(ResponseCodeEnum.USER_PASSWORD_ERROR);
         }
 
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         // 使用 BCrypt 校验明文密码和密文密码是否匹配
-        boolean matches = passwordEncoder.matches(rawPassword, encodedPassword);
+        boolean matches = PASSWORD_ENCODER.matches(rawPassword, encodedPassword);
         if (!matches) {
+            // 登录失败次数 +1
+            addLoginFailCount(mobile);
+
             throw new BizException(ResponseCodeEnum.USER_PASSWORD_ERROR);
         }
+
+        // 密码校验成功，清除登录失败次数
+        String failCountKey = LOGIN_FAIL_COUNT_KEY_PREFIX + mobile;
+        redisTemplate.delete(failCountKey);
     }
+
 
     /**
      * 校验验证码
