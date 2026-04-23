@@ -31,4 +31,11 @@ public interface UserService {
      * @return
      */
     Response<?> sendVerifyCode(SendVerifyCodeReqVO sendVerifyCodeReqVO);
+
+
+    /**
+     * 退出登录
+     * @return
+     */
+    Response<?> logout();
 }

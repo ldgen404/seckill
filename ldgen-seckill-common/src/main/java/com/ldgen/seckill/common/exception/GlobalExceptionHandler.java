@@ -1,5 +1,6 @@
 package com.ldgen.seckill.common.exception;
 
+import cn.dev33.satoken.exception.NotLoginException;
 import com.ldgen.seckill.common.enums.ResponseCodeEnum;
 import com.ldgen.seckill.common.utils.Response;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,9 +24,10 @@ public class GlobalExceptionHandler {
 
     /**
      * 捕获自定义业务异常
+     *
      * @return
      */
-    @ExceptionHandler({ BizException.class })
+    @ExceptionHandler({BizException.class})
     @ResponseBody
     public Response<Object> handleBizException(HttpServletRequest request, BizException e) {
         log.warn("{} request fail, errorCode: {}, errorMessage: {}", request.getRequestURI(), e.getErrorCode(), e.getErrorMessage());
@@ -34,9 +36,10 @@ public class GlobalExceptionHandler {
 
     /**
      * 捕获参数校验异常
+     *
      * @return
      */
-    @ExceptionHandler({ MethodArgumentNotValidException.class })
+    @ExceptionHandler({MethodArgumentNotValidException.class})
     @ResponseBody
     public Response<Object> handleMethodArgumentNotValidException(HttpServletRequest request, MethodArgumentNotValidException e) {
         // 参数错误异常码
@@ -70,15 +73,31 @@ public class GlobalExceptionHandler {
 
     /**
      * 其他类型异常
+     *
      * @param request
      * @param e
      * @return
      */
-    @ExceptionHandler({ Exception.class })
+    @ExceptionHandler({Exception.class})
     @ResponseBody
     public Response<Object> handleOtherException(HttpServletRequest request, Exception e) {
         log.error("{} request error, ", request.getRequestURI(), e);
         return Response.fail(ResponseCodeEnum.SYSTEM_ERROR);
     }
+
+    /**
+     * 捕获未登录异常
+     *
+     * @param request
+     * @param e
+     * @return
+     */
+    @ExceptionHandler({NotLoginException.class})
+    @ResponseBody
+    public Response<Object> handleNotLoginException(HttpServletRequest request, NotLoginException e) {
+        log.warn("{} request fail, 未登录异常: {}", request.getRequestURI(), e.getMessage());
+        return Response.fail(ResponseCodeEnum.UNAUTHORIZED);
+    }
+
 }
 

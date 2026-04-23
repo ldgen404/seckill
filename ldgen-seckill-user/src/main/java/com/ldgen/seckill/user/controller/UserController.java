@@ -25,6 +25,7 @@ public class UserController {
 
     /**
      * 用户注册
+     *
      * @param registerUserReqVO
      * @return
      */
@@ -52,6 +53,15 @@ public class UserController {
     @ApiOperationLog(description = "发送验证码")
     public Response<?> sendVerifyCode(@Validated @RequestBody SendVerifyCodeReqVO sendVerifyCodeReqVO) {
         return userService.sendVerifyCode(sendVerifyCodeReqVO);
+    }
+
+    /**
+     * 退出登录
+     */
+    @PostMapping("/logout")
+    @ApiOperationLog(description = "退出登录")
+    public Response<?> logout() {
+        return userService.logout();
     }
 
 }
