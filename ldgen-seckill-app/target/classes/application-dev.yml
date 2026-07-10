@@ -28,10 +28,11 @@ spring:
   data:
     redis:
       # Redis 服务器地址
-      host: 127.0.0.1
+      host: 47.121.222.212
       # Redis 服务器端口
       port: 6379
       # Redis 密码（默认为空，如果设置了密码请填写）
+      password: 510503ldgen123
       # 使用的数据库索引（默认 0）
       database: 0
       # 连接超时时间（毫秒）

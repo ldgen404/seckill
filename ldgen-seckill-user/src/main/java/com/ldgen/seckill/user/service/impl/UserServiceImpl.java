@@ -1,5 +1,7 @@
 package com.ldgen.seckill.user.service.impl;
 
+import cloud.tianai.captcha.application.ImageCaptchaApplication;
+import cloud.tianai.captcha.spring.plugins.secondary.SecondaryVerificationApplication;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
@@ -58,6 +60,9 @@ public class UserServiceImpl implements UserService {
 
     @Resource(name = "bizExecutor")
     private Executor bizExecutor;
+
+    @Resource
+    private ImageCaptchaApplication imageCaptchaApplication;
 
     // Redis 中验证码的 Key 前缀
     private static final String VERIFY_CODE_KEY_PREFIX = "verify_code:";
@@ -231,6 +236,20 @@ public class UserServiceImpl implements UserService {
         String mobile = sendVerifyCodeReqVO.getMobile();
         Integer type = sendVerifyCodeReqVO.getType();
 
+        // 行为验证码二次校验
+        String captchaId = sendVerifyCodeReqVO.getCaptchaId();
+        if (StrUtil.isBlank(captchaId)) {
+            throw new BizException(ResponseCodeEnum.CAPTCHA_VERIFICATION_FAILED);
+        }
+        // 判断 ImageCaptchaApplication 是否支持二次校验
+        //检查该验证码 ID 是否已通过 /captcha/check 的校验。内部会从 Redis 中查询该 ID 的校验状态：
+        boolean verified = false;
+        if (imageCaptchaApplication instanceof SecondaryVerificationApplication) {
+            verified = ((SecondaryVerificationApplication) imageCaptchaApplication).secondaryVerification(captchaId);
+        }
+        if (!verified) {
+            throw new BizException(ResponseCodeEnum.CAPTCHA_VERIFICATION_FAILED);
+        }
         // 判断验证码类型是否合法
         VerifyCodeTypeEnum verifyCodeType = VerifyCodeTypeEnum.valueOf(type);
         if (Objects.isNull(verifyCodeType)) {
