@@ -69,8 +69,8 @@
             <option name="tableUIInfoList">
               <list>
                 <TableUIInfo>
-                  <option name="className" value="GoodsDetail" />
-                  <option name="tableName" value="t_goods_detail" />
+                  <option name="className" value="SeckillOrder" />
+                  <option name="tableName" value="t_seckill_order" />
                 </TableUIInfo>
               </list>
             </option>

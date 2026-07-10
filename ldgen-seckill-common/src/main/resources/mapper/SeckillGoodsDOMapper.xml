@@ -22,20 +22,26 @@
     seckill_stock, seckill_limit, sort, version, is_deleted, create_time, update_time
   </sql>
 
+<!--扣减秒杀库存-->
+  <update id="deductStock">
+    update t_seckill_goods
+    set seckill_stock = seckill_stock - 1
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
   <!-- 根据活动 ID 查询秒杀商品列表（按 sort 排序，排除掉已软删除的） -->
   <select id="selectByActivityId" resultMap="BaseResultMap">
     select
-    <include refid="Base_Column_List" />
+        <include refid="Base_Column_List" />
     from t_seckill_goods
     where activity_id = #{activityId,jdbcType=BIGINT}
     and is_deleted = 0
     order by sort asc
   </select>
 
-  <select id="selectByActivityIdAndGoodsId"
-          resultMap="BaseResultMap">
+  <select id="selectByActivityIdAndGoodsId" resultMap="BaseResultMap">
     select
-    <include refid="Base_Column_List" />
+        <include refid="Base_Column_List" />
     from t_seckill_goods
     where activity_id = #{activityId,jdbcType=BIGINT}
     and goods_id = #{goodsId,jdbcType=BIGINT}

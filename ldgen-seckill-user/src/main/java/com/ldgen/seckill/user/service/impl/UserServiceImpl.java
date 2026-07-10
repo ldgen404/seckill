@@ -244,10 +244,11 @@ public class UserServiceImpl implements UserService {
         if (imageCaptchaApplication instanceof SecondaryVerificationApplication) {
             verified = ((SecondaryVerificationApplication) imageCaptchaApplication).secondaryVerification(captchaId);
         }
+        log.info("==> 验证码二次校验结果, captchaId: {}, verified: {}", captchaId, verified);
         if (!verified) {
             throw new BizException(ResponseCodeEnum.CAPTCHA_VERIFICATION_FAILED);
         }
-        // 判断验证码类型是否合法
+       // 判断验证码类型是否合法
         VerifyCodeTypeEnum verifyCodeType = VerifyCodeTypeEnum.valueOf(type);
         if (Objects.isNull(verifyCodeType)) {
             throw new BizException(ResponseCodeEnum.VERIFY_CODE_TYPE_ERROR);
