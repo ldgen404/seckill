@@ -13,4 +13,9 @@ public interface GoodsDOMapper {
      */
     List<GoodsDO> selectByIds(List<Long> ids);
 
+    /**
+     * 根据主键查询商品
+     */
+    GoodsDO selectByPrimaryKey(Long id);
+
 }

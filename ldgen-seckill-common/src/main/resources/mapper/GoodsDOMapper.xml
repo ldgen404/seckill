@@ -14,6 +14,7 @@
   <sql id="Base_Column_List">
     id, goods_name, goods_img, goods_price, `status`, is_deleted, create_time, update_time
   </sql>
+
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
