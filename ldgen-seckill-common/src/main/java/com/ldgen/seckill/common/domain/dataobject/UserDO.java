@@ -1,4 +1,4 @@
-package com.ldgen.seckill.common.dataobject;
+package com.ldgen.seckill.common.domain.dataobject;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

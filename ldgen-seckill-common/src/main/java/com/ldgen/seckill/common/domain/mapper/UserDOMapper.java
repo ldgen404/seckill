@@ -1,6 +1,6 @@
-package com.ldgen.seckill.common.mapper;
+package com.ldgen.seckill.common.domain.mapper;
 
-import com.ldgen.seckill.common.dataobject.UserDO;
+import com.ldgen.seckill.common.domain.dataobject.UserDO;
 
 public interface UserDOMapper {
     /**

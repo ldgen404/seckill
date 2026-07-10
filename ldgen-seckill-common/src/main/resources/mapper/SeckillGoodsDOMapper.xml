@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ldgen.seckill.common.domain.mapper.SeckillGoodsDOMapper">
+  <resultMap id="BaseResultMap" type="com.ldgen.seckill.common.domain.dataobject.SeckillGoodsDO">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="activity_id" jdbcType="BIGINT" property="activityId" />
+    <result column="goods_id" jdbcType="BIGINT" property="goodsId" />
+    <result column="seckill_title" jdbcType="VARCHAR" property="seckillTitle" />
+    <result column="seckill_img" jdbcType="VARCHAR" property="seckillImg" />
+    <result column="seckill_price" jdbcType="DECIMAL" property="seckillPrice" />
+    <result column="seckill_total" jdbcType="INTEGER" property="seckillTotal" />
+    <result column="seckill_stock" jdbcType="INTEGER" property="seckillStock" />
+    <result column="seckill_limit" jdbcType="INTEGER" property="seckillLimit" />
+    <result column="sort" jdbcType="INTEGER" property="sort" />
+    <result column="version" jdbcType="INTEGER" property="version" />
+    <result column="is_deleted" jdbcType="TINYINT" property="isDeleted" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, activity_id, goods_id, seckill_title, seckill_img, seckill_price, seckill_total, 
+    seckill_stock, seckill_limit, sort, version, is_deleted, create_time, update_time
+  </sql>
+
+  <!-- 根据活动 ID 查询秒杀商品列表（按 sort 排序，排除掉已软删除的） -->
+  <select id="selectByActivityId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from t_seckill_goods
+    where activity_id = #{activityId,jdbcType=BIGINT}
+    and is_deleted = 0
+    order by sort asc
+  </select>
+
+</mapper>

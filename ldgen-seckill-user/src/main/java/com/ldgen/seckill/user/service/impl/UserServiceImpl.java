@@ -6,10 +6,10 @@ import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 
-import com.ldgen.seckill.common.dataobject.UserDO;
+import com.ldgen.seckill.common.domain.dataobject.UserDO;
 import com.ldgen.seckill.common.enums.ResponseCodeEnum;
 import com.ldgen.seckill.common.exception.BizException;
-import com.ldgen.seckill.common.mapper.UserDOMapper;
+import com.ldgen.seckill.common.domain.mapper.UserDOMapper;
 import com.ldgen.seckill.common.utils.Response;
 import com.ldgen.seckill.user.enums.LoginTypeEnum;
 import com.ldgen.seckill.user.enums.UserStatusEnum;
@@ -22,9 +22,6 @@ import com.ldgen.seckill.user.service.UserService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.data.redis.core.RedisOperations;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -40,7 +37,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @Author: 犬小哈
+ * @Author: ldgen
  * @Date: 2026/4/10 18:11
  * @Version: v1.0.0
  * @Description: 用户业务
