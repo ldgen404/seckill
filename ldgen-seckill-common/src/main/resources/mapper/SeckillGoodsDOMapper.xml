@@ -27,6 +27,7 @@
     update t_seckill_goods
     set seckill_stock = seckill_stock - 1
     where id = #{id,jdbcType=BIGINT}
+    and seckill_stock > 0
   </update>
 
   <!-- 根据活动 ID 查询秒杀商品列表（按 sort 排序，排除掉已软删除的） -->
