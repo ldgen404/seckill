@@ -3,6 +3,7 @@ package com.ldgen.seckill.app;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 
 /**
@@ -17,6 +18,9 @@ import org.springframework.context.annotation.ComponentScan;
 public class SeckillApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(SeckillApplication.class, args);
+        ConfigurableApplicationContext context = SpringApplication.run(SeckillApplication.class, args);
+        // 打印实际生效的 RabbitMQ 地址
+        String host = context.getEnvironment().getProperty("spring.rabbitmq.host");
+        System.out.println(">>> 实际连接的 RabbitMQ Host: " + host);
     }
 }

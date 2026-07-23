@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * @Author: 犬小哈
+ * @Author: ldgen
  * @Date: 2026/5/8 18:28
  * @Version: v1.0.0
  * @Description: 订单状态枚举

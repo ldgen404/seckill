@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ldgen.seckill.common.domain.mapper.GoodsDOMapper">
+  <resultMap id="BaseResultMap" type="com.ldgen.seckill.common.domain.dataobject.GoodsDO">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="goods_name" jdbcType="VARCHAR" property="goodsName" />
+    <result column="goods_img" jdbcType="VARCHAR" property="goodsImg" />
+    <result column="goods_price" jdbcType="DECIMAL" property="goodsPrice" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="is_deleted" jdbcType="TINYINT" property="isDeleted" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, goods_name, goods_img, goods_price, `status`, is_deleted, create_time, update_time
+  </sql>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from t_goods
+    where id = #{id,jdbcType=BIGINT}
+    and is_deleted = 0
+  </select>
+
+  <!-- 根据主键批量查询商品 -->
+  <select id="selectByIds" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from t_goods
+    where id in
+    <foreach collection="list" item="id" open="(" separator="," close=")">
+      #{id}
+    </foreach>
+    and is_deleted = 0
+  </select>
+
+
+</mapper>

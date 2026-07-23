@@ -8,7 +8,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
- * @Author: 犬小哈
+ * @Author: ldgen
  * @Date: 2026/5/8 21:39
  * @Version: v1.0.0
  * @Description: SaToken 配置类

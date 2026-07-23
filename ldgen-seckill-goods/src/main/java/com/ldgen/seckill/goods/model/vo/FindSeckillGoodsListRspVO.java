@@ -8,12 +8,24 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+/**
+ * @Author: ldgen
+ * @Date: 2026/4/30 20:06
+ * @Version: v1.0.0
+ * @Description: 查询秒杀商品列表出参
+ **/
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class FindSeckillGoodsListRspVO {
+
     private Long id;
+
+    /**
+     * 商品 ID
+     */
+    private Long goodsId;
 
     /**
      * 商品原价

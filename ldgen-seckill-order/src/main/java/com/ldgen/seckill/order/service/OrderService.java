@@ -5,7 +5,7 @@ import com.ldgen.seckill.order.model.vo.DoSeckillReqVO;
 import com.ldgen.seckill.order.model.vo.DoSeckillRspVO;
 
 /**
- * @Author: 犬小哈
+ * @Author: ldgen
  * @Date: 2026/5/8 10:00
  * @Version: v1.0.0
  * @Description: 订单模块业务

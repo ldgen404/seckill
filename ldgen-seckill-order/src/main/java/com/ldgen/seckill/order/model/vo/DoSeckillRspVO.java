@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
- * @Author: 犬小哈
+ * @Author: ldgen
  * @Date: 2026/5/8 18:31
  * @Version: v1.0.0
  * @Description: 秒杀下单出参
