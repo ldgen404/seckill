@@ -6,7 +6,7 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
 /**
- * @Author: 犬小哈
+ * @Author: ldgen
  * @Date: 2026/6/13 18:20
  * @Version: v1.0.0
  * @Description: 测试消费者

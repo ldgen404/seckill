@@ -2,6 +2,7 @@ package com.ldgen.seckill.goods.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
+import com.github.benmanes.caffeine.cache.Cache;
 import com.ldgen.seckill.common.constant.RedisKeyConstants;
 import com.ldgen.seckill.common.domain.dataobject.*;
 import com.ldgen.seckill.common.domain.mapper.*;
@@ -59,6 +60,13 @@ public class GoodsServiceImpl implements GoodsService {
     @Resource
     private RedissonClient redissonClient;
 
+    @Resource
+    private Cache<String, String> goodsListLocalCache;
+
+    @Resource
+    private Cache<String, String> goodsDetailLocalCache;
+
+
     /**
      * 查询秒杀商品列表
      *
@@ -74,6 +82,17 @@ public class GoodsServiceImpl implements GoodsService {
 
         // 构建 Redis 缓存 Key
         String redisKey = RedisKeyConstants.GOODS_LIST_PREFIX + activityId;
+
+        // L1: 先查 Caffeine 本地缓存（微秒级，无网络开销）
+        String localCachedValue = goodsListLocalCache.getIfPresent(redisKey);
+        if (StrUtil.isNotBlank(localCachedValue)) {
+            log.info("==> 命中本地缓存（L1）, key: {}", redisKey);
+
+            // 手动将 String 字符串，反序列化为商品列表
+            List<FindSeckillGoodsListRspVO> cachedList = processCachedGoodsList(localCachedValue, activityId);
+
+            return Response.success(cachedList);
+        }
 
         // 第一道防线：布隆过滤器校验活动是否存在
         // 如果布隆过滤器返回 "不存在"，绝对正确，说明该活动 ID 一定不合法，直接拒绝掉
@@ -92,8 +111,7 @@ public class GoodsServiceImpl implements GoodsService {
 
             // 缓存命中
             // 手动将 String 字符串，反序列化为商品列表
-            List<FindSeckillGoodsListRspVO> cachedList = JsonUtils
-                    .parseArray(redisJsonValue, FindSeckillGoodsListRspVO.class);
+            List<FindSeckillGoodsListRspVO> cachedList = processCachedGoodsList(redisJsonValue, activityId);
 
             // 设置库存字段值（因为库存变化频繁，需要从数据库查最新的）
             supplementStock(cachedList, activityId);
@@ -528,4 +546,34 @@ public class GoodsServiceImpl implements GoodsService {
 
         log.info("==> 缓存空值，防止穿透, redisKey: {}, TTL: {}min", redisKey, RedisKeyConstants.NULL_CACHE_TTL_MINUTES);
     }
+
+    /**
+     * 处理缓存命中的商品列表数据: 反序列化 → 补充库存 → 重新计算活动状态
+     *
+     * @param redisJsonValue
+     * @param activityId
+     * @return
+     */
+    private List<FindSeckillGoodsListRspVO> processCachedGoodsList(String redisJsonValue, Long activityId) {
+        // 缓存命中
+        // 手动将 String 字符串，反序列化为商品列表
+        List<FindSeckillGoodsListRspVO> cachedList = JsonUtils
+                .parseArray(redisJsonValue, FindSeckillGoodsListRspVO.class);
+
+        // 如果集合为空，直接返回，说明活动下暂无商品
+        if (CollUtil.isEmpty(cachedList)) {
+            return cachedList;
+        }
+
+        // 设置库存字段值（因为库存变化频繁，需要从数据库查最新的）
+        supplementStock(cachedList, activityId);
+
+        // 实时重新计算活动状态
+        FindSeckillGoodsListRspVO first = cachedList.get(0);
+        ActivityStatusEnum activityStatusEnum = calculateActivityStatus(first.getBeginTime(), first.getEndTime());
+        cachedList.forEach(item ->
+                item.setActivityStatus(activityStatusEnum.getStatus()));
+        return cachedList;
+    }
+
 }

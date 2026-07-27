@@ -11,7 +11,7 @@ import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Profile;
 
 /**
- * @Author: 犬小哈
+ * @Author: ldgen
  * @Date: 2026/6/13 16:29
  * @Version: v1.0.0
  * @Description:  RabbitMQ 配置类

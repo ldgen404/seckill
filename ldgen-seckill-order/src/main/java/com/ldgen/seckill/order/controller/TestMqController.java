@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.LocalDateTime;
 
 /**
- * @Author: 犬小哈
+ * @Author: ldgen
  * @Date: 2026/6/13 18:16
  * @Version: v1.0.0
  * @Description: 测试 MQ 收发
